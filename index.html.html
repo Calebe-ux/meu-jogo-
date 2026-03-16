@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Guess Game Ultra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#000428,#004e92);
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+.tela{
+text-align:center;
+background:rgba(0,0,0,0.75);
+padding:40px;
+border-radius:12px;
+box-shadow:0 0 30px black;
+width:380px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+background:#00c853;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin:5px;
+}
+
+button:hover{
+background:#009624;
+}
+
+input{
+padding:10px;
+font-size:16px;
+width:120px;
+text-align:center;
+border-radius:5px;
+border:none;
+margin:5px;
+}
+
+#jogo,#vitoria{
+display:none;
+}
+
+.barra{
+width:100%;
+height:10px;
+background:#444;
+border-radius:5px;
+margin-top:10px;
+}
+
+.progresso{
+height:10px;
+background:#00ffae;
+width:0%;
+border-radius:5px;
+}
+
+.vitoriaAnim{
+animation:piscar 0.5s infinite;
+}
+
+@keyframes piscar{
+0%{color:white;}
+50%{color:yellow;}
+100%{color:white;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="tela" id="menu">
+
+<h1>🎮 Guess Game Ultra</h1>
+
+<p>Digite seu nome</p>
+
+<input id="nome">
+
+<p>Escolha a dificuldade</p>
+
+<button onclick="iniciar(10)">Fácil</button>
+<button onclick="iniciar(50)">Médio</button>
+<button onclick="iniciar(100)">Difícil</button>
+
+</div>
+
+
+
+<div class="tela" id="jogo">
+
+<h1>🎯 Adivinhe o número</h1>
+
+<p id="nivel"></p>
+
+<input type="number" id="numero">
+
+<br>
+
+<button onclick="jogar()">Tentar</button>
+<button onclick="reiniciar()">Reiniciar</button>
+
+<p id="resultado"></p>
+
+<p id="tentativas">Tentativas: 0</p>
+<p id="tempo">Tempo: 0s</p>
+
+<div class="barra">
+<div class="progresso" id="barra"></div>
+</div>
+
+</div>
+
+
+
+<div class="tela" id="vitoria">
+
+<h1 class="vitoriaAnim">🏆 Você venceu!</h1>
+
+<p id="mensagem"></p>
+
+<button onclick="voltarMenu()">Jogar novamente</button>
+
+<h3>Ranking</h3>
+
+<ul id="ranking"></ul>
+
+</div>
+
+
+
+<script>
+
+let numeroSecreto;
+let limite;
+let tentativas=0;
+let tempo=0;
+let jogador;
+let ranking=[];
+let cronometro;
+
+function iniciar(max){
+
+jogador=document.getElementById("nome").value;
+
+if(jogador==""){
+alert("Digite seu nome");
+return;
+}
+
+limite=max;
+
+document.getElementById("menu").style.display="none";
+document.getElementById("jogo").style.display="block";
+
+document.getElementById("nivel").innerHTML=
+"Número entre 1 e "+limite;
+
+numeroSecreto=Math.floor(Math.random()*limite)+1;
+
+cronometro=setInterval(function(){
+
+tempo++;
+
+document.getElementById("tempo").innerHTML="Tempo: "+tempo+"s";
+
+},1000);
+
+}
+
+function jogar(){
+
+let chute=document.getElementById("numero").value;
+
+tentativas++;
+
+document.getElementById("tentativas").innerHTML=
+"Tentativas: "+tentativas;
+
+let progresso=(tentativas/20)*100;
+
+document.getElementById("barra").style.width=
+progresso+"%";
+
+if(chute==numeroSecreto){
+
+clearInterval(cronometro);
+
+ranking.push(
+jogador+" - "+tentativas+" tentativas - "+tempo+"s"
+);
+
+mostrarRanking();
+
+document.getElementById("jogo").style.display="none";
+document.getElementById("vitoria").style.display="block";
+
+document.getElementById("mensagem").innerHTML=
+jogador+" acertou o número!";
+
+}
+
+else if(chute>numeroSecreto){
+
+document.getElementById("resultado").innerHTML=
+"📉 O número é menor";
+
+}
+
+else{
+
+document.getElementById("resultado").innerHTML=
+"📈 O número é maior";
+
+}
+
+}
+
+function mostrarRanking(){
+
+let lista=document.getElementById("ranking");
+
+lista.innerHTML="";
+
+ranking.forEach(function(j){
+
+let li=document.createElement("li");
+
+li.innerHTML=j;
+
+lista.appendChild(li);
+
+});
+
+}
+
+function reiniciar(){
+
+numeroSecreto=Math.floor(Math.random()*limite)+1;
+
+tentativas=0;
+tempo=0;
+
+document.getElementById("numero").value="";
+document.getElementById("resultado").innerHTML="";
+document.getElementById("tentativas").innerHTML="Tentativas: 0";
+document.getElementById("tempo").innerHTML="Tempo: 0s";
+document.getElementById("barra").style.width="0%";
+
+}
+
+function voltarMenu(){
+
+document.getElementById("vitoria").style.display="none";
+document.getElementById("menu").style.display="block";
+
+tentativas=0;
+tempo=0;
+
+}
+
+</script>
+
+</body>
+</html>
